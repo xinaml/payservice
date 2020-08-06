@@ -139,13 +139,6 @@ public class CommonApi {
             log.error("参数验证失败");
             return mapToXml(wxBackData);
         }
-        // 如果支付失败，则返回
-        if (!"SUCCESS".equals(map.get("return_code"))) {
-            wxBackData.put("return_code", "SUCCESS");
-            wxBackData.put("return_msg", "支付失败");
-            log.error("支付失败");
-            return mapToXml(wxBackData);
-        }
         //参数赋值
         String appId = map.get("appid");//服务商的APPID
         String bankType = map.get("bank_type");//付款银行
@@ -156,15 +149,17 @@ public class CommonApi {
         String totalFee = map.get("total_fee");//总金额
         String tradeType = map.get("trade_type");//交易类型
         String transactionId = map.get("transaction_id");//微信支付订单号
+        String returnCode = map.get("return_code");//结果
         //读取文件
         List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
         boolean exists=false;//是否已经支付成功,且回调过了
         for(OrderModel om:modelList){
-            if(om.getTransactionId().equals(transactionId)){
+            if(om.getOutTradeNo().equals(outTradeNo)){
                 exists=true ;
             }
         }
         if(exists){
+            log.warn("订单重复回调");
             return "";
         }
         //把回调结果写入文件
@@ -177,7 +172,9 @@ public class CommonApi {
         om.setCashFee(new BigDecimal(cashFee));
         om.setAppId(appId);
         om.setBankType(bankType);
+        om.setReturnCode(returnCode);
         modelList.add(om);
+        log.info("订单保存成功:"+JSON.toJSONString(om));
         FileUtil.writeFile(tableName,modelList);
         return "";
     }

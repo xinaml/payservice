@@ -16,6 +16,7 @@ public class OrderModel {
     private String timeEnd;
     private String tradeType;
     private String transactionId;
+    private String returnCode;
 
     public String getAppId() {
         return appId;
@@ -87,5 +88,13 @@ public class OrderModel {
 
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public String getReturnCode() {
+        return returnCode;
+    }
+
+    public void setReturnCode(String returnCode) {
+        this.returnCode = returnCode;
     }
 }
