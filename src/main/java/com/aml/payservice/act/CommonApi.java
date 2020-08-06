@@ -91,7 +91,7 @@ public class CommonApi {
         try {
             String path=ClassUtils.getDefaultClassLoader().getResource("static").getPath();
             String name=UUID.randomUUID().toString()+".png";
-            String targetPath="/py/images/"+UUID.randomUUID().toString()+".png";
+            String targetPath="/py/qr/"+name;
             String logoPath=path+"/logo.png";
             Map<String, String> resp = wxpay.unifiedOrder(data);
             QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath,targetPath);
