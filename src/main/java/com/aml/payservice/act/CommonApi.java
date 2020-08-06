@@ -43,7 +43,7 @@ import java.util.*;
 public class CommonApi {
     private Logger log = LoggerFactory.getLogger(CommonApi.class);
     private String tableName="order";
-    @Value("${mchkey}")
+    @Value("${key}")
     private String key;
     @Value("${appId}")
     private String appId;
