@@ -176,6 +176,7 @@ public class CommonApi {
         om.setCashFee(new BigDecimal(cashFee));
         om.setAppId(appId);
         om.setBankType(bankType);
+        om.setTransactionId(transactionId);
         om.setReturnCode(returnCode);
         modelList.add(om);
         log.info("订单保存成功:"+JSON.toJSONString(om));
