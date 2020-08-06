@@ -49,7 +49,10 @@ public class CommonApi {
     private String appId;
     @Value("${mchId}")
     private String mchId;
-
+    @Value("${notifyUrl}")
+    private String notifyUrl="http://re.luzhiai.com:8088/api/payNotify";
+    @Value("${createIp}")
+    private String createIp="http://re.luzhiai.com:8088/api/payNotify";
     /**
      * 微信统一下单
      * @param fee
@@ -77,8 +80,8 @@ public class CommonApi {
         data.put("out_trade_no", outTradeNo);
         data.put("fee_type", "CNY");
         data.put("total_fee", fee.toString()); // 分单位
-        data.put("spbill_create_ip", "129.226.180.215");
-        data.put("notify_url","http://re.luzhiai.com:8088/api/payNotify" );
+        data.put("spbill_create_ip", createIp);
+        data.put("notify_url",notifyUrl );
         data.put("trade_type", "NATIVE");  // "JSAPI"
         data.put("product_id", "1");
         try {
