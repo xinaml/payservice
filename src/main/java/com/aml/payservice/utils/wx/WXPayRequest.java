@@ -125,7 +125,6 @@ public class WXPayRequest {
             throw new Exception("WXPayConfig.getWXPayDomain().getDomain() is empty or null");
         }
         try {
-            System.out.println(data);
             String result = requestOnce(domainInfo.domain, urlSuffix, uuid, data, connectTimeoutMs, readTimeoutMs, useCert);
             elapsedTimeMillis = WXPayUtil.getCurrentTimestampMs()-startTimestampMs;
             config.getWXPayDomain().report(domainInfo.domain, elapsedTimeMillis, null);
