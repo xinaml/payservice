@@ -94,7 +94,12 @@ public class CommonApi {
             String targetPath="/py/qr/"+name;
             String logoPath=path+"/logo.png";
             Map<String, String> resp = wxpay.unifiedOrder(data);
-            QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath,targetPath);
+//            QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath,targetPath);
+            File file=new File(targetPath);
+            byte[] bytes= QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath);
+            FileOutputStream os =new FileOutputStream(file);
+            os.write(bytes);
+            os.close();
             log.info("qr path: "+targetPath);
             resp.put("imagePath", "http://re.luzhiai.com:8088/"+name);
             return resp;
