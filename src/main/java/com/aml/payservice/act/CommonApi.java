@@ -95,7 +95,7 @@ public class CommonApi {
             String logoPath=path+"/1.png";
             Map<String, String> resp = wxpay.unifiedOrder(data);
             QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath,targetPath);
-            data.put("imagePath", "http://re.luzhiai.com:8088/"+name);
+            resp.put("imagePath", "http://re.luzhiai.com:8088/"+name);
             return resp;
         } catch (Exception e) {
             e.printStackTrace();
