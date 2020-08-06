@@ -1,7 +1,5 @@
 package com.aml.payservice.utils.wx;
 
-import org.springframework.util.ResourceUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +27,8 @@ public class MyConfig extends WXPayConfig {
 
     private byte[] certData;
     public MyConfig(String appId,String mchId,String key) throws Exception {
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "static/apiclient_cert.p12");
+        String certPath = "/py/apiclient_cert.p12";
+        File file = new File(certPath);
         InputStream certStream = new FileInputStream(file);
         this.certData = new byte[(int) file.length()];
         certStream.read(this.certData);
