@@ -134,7 +134,7 @@ public class CommonApi {
         }
         signMap.remove("sign");
         //获取mchKey
-        String mchKey = "";
+        String mchKey = key;
         String checkSign = this.sign(signMap, mchKey, false);
         log.info("微信回调支付, 本地验证checkSign:" + checkSign);
         if (!sign.equalsIgnoreCase(checkSign)) {
