@@ -215,7 +215,7 @@ public class CommonApi {
         Iterator<OrderModel> it =modelList.iterator();
         while (it.hasNext()){
             OrderModel om=it.next();
-            if(om.getTransactionId().equals(outTradeNo)){
+            if(om.getOutTradeNo().equals(outTradeNo)){
                 it.remove();
             }
         }
