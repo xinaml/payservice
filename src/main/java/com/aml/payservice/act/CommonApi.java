@@ -156,7 +156,7 @@ public class CommonApi {
         String tradeType = map.get("trade_type");//交易类型
         String transactionId = map.get("transaction_id");//微信支付订单号
         String returnCode = map.get("return_code");//结果
-        List<OldOrderModel> oldModelList =FileUtil.readFile(tableName, OldOrderModel.class);
+        List<OldOrderModel> oldModelList =FileUtil.readFile(oldTableName, OldOrderModel.class);
         boolean exists=false;//是否已经支付成功,且回调过了
         for(OldOrderModel om:oldModelList){
             if(om.getOutTradeNo().equals(outTradeNo)){
