@@ -213,14 +213,19 @@ public class CommonApi {
         }
         List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
         Iterator<OrderModel> it =modelList.iterator();
+        boolean rm=false;
         while (it.hasNext()){
             OrderModel om=it.next();
             if(om.getOutTradeNo().equals(outTradeNo)){
                 it.remove();
+                rm=true;
             }
         }
-        FileUtil.writeFile(tableName,modelList);
-        return "SUCCESS";
+        if(rm){
+            FileUtil.writeFile(tableName,modelList);
+            return "SUCCESS";
+        }
+        return "FAIL";
     }
     /**
      *  * InputStream流转换成String字符串
