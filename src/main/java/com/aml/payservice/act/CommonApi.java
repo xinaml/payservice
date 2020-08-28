@@ -2,6 +2,7 @@ package com.aml.payservice.act;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aml.payservice.model.OldOrderModel;
 import com.aml.payservice.model.OrderModel;
 import com.aml.payservice.utils.FileUtil;
 import com.aml.payservice.utils.MD5;
@@ -47,6 +48,7 @@ import java.util.*;
 public class CommonApi {
     private Logger log = LoggerFactory.getLogger(CommonApi.class);
     private String tableName="order";
+    private String oldTableName="order_back";
     @Value("${key}")
     private String key;
     @Value("${appId}")
@@ -154,10 +156,9 @@ public class CommonApi {
         String tradeType = map.get("trade_type");//交易类型
         String transactionId = map.get("transaction_id");//微信支付订单号
         String returnCode = map.get("return_code");//结果
-        //读取文件
-        List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
+        List<OldOrderModel> oldModelList =FileUtil.readFile(tableName, OldOrderModel.class);
         boolean exists=false;//是否已经支付成功,且回调过了
-        for(OrderModel om:modelList){
+        for(OldOrderModel om:oldModelList){
             if(om.getOutTradeNo().equals(outTradeNo)){
                 exists=true ;
             }
@@ -166,6 +167,8 @@ public class CommonApi {
             log.warn("订单重复回调");
             return "";
         }
+        //读取文件
+        List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
         //把回调结果写入文件
         OrderModel om =new OrderModel();
         om.setOpenId(openId);
@@ -219,6 +222,10 @@ public class CommonApi {
             if(om.getOutTradeNo().equals(outTradeNo)){
                 it.remove();
                 rm=true;
+                List<OldOrderModel> oldModelList =FileUtil.readFile(tableName, OldOrderModel.class);
+                oldModelList.add(new OldOrderModel(om.getOutTradeNo()));
+                FileUtil.writeFile(oldTableName,oldModelList);
+
             }
         }
         if(rm){
