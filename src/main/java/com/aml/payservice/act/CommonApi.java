@@ -223,6 +223,7 @@ public class CommonApi {
         }
         if(rm){
             FileUtil.writeFile(tableName,modelList);
+            log.info("del success:"+outTradeNo);
             return "SUCCESS";
         }
         return "FAIL";
