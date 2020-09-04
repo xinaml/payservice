@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aml.payservice.model.OldOrderModel;
 import com.aml.payservice.model.OrderModel;
+import com.aml.payservice.utils.DateUtil;
 import com.aml.payservice.utils.FileUtil;
 import com.aml.payservice.utils.MD5;
 import com.aml.payservice.utils.QRcodeUtil;
@@ -14,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -34,7 +33,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -90,6 +88,7 @@ public class CommonApi {
         data.put("notify_url",notifyUrl );
         data.put("trade_type", "NATIVE");  // "JSAPI"
         data.put("product_id", "1");
+        data.put("time_expire", DateUtil.getExpireTime(3));
         try {
             String name=UUID.randomUUID().toString()+".png";
             String targetPath="/py/qr/"+name;
