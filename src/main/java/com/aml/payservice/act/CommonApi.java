@@ -94,8 +94,12 @@ public class CommonApi {
             String name=UUID.randomUUID().toString()+".png";
             String date =new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-
-            String targetPath="/py/qr/"+date+"/"+name;
+            String dir="/py/qr/"+date+"/";
+            File f=new File(dir);
+            if(!f.exists()){
+                f.mkdirs();
+            }
+            String targetPath=dir+name;
             String logoPath="/py/logo.png";
             Map<String, String> resp = wxpay.unifiedOrder(data);
             if(resp.get("err_code_des")!=null){
