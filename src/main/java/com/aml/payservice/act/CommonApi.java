@@ -93,6 +93,7 @@ public class CommonApi {
         try {
             String name=UUID.randomUUID().toString()+".png";
             String date =new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
             String dir="/py/qr/"+date+"/";
             File f=new File(dir);
             if(!f.exists()){
