@@ -1,18 +1,24 @@
-package com.aml.payservice.model;
+package com.aml.payservice.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * @author liguiqin
- * @date 2020/8/28
+ * @date 2022/12/9
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class OldOrderModel {
-    private String outTradeNo;
+public class MailModelVO {
+    private String id;
+    private String mail;
+    private String startTime;
+    private String endTime;
+
 }

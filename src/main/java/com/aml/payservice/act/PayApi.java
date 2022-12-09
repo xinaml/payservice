@@ -10,12 +10,13 @@ import com.aml.payservice.utils.MD5;
 import com.aml.payservice.utils.QRcodeUtil;
 import com.aml.payservice.utils.wx.MyConfig;
 import com.aml.payservice.utils.wx.WXPay;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -43,11 +44,11 @@ import java.util.*;
  * @date 2020/8/1
  */
 @Controller
-@RequestMapping("api")
-public class CommonApi {
-    private Logger log = LoggerFactory.getLogger(CommonApi.class);
-    private String tableName="order";
-    private String oldTableName="order_back";
+@RequestMapping("/api")
+@Log4j2
+public class PayApi {
+    private String tableName = "order";
+    private String oldTableName = "order_back";
     @Value("${key}")
     private String key;
     @Value("${appId}")
@@ -55,30 +56,32 @@ public class CommonApi {
     @Value("${mchId}")
     private String mchId;
     @Value("${notifyUrl}")
-    private String notifyUrl="http://re.luzhiai.com:8088/api/payNotify";
+    private String notifyUrl = "http://re.luzhiai.com:8088/api/payNotify";
     @Value("${createIp}")
-    private String createIp="http://re.luzhiai.com:8088/api/payNotify";
+    private String createIp = "http://re.luzhiai.com:8088/api/payNotify";
+
     /**
      * 微信统一下单
+     *
      * @param fee
      * @param body
      * @param outTradeNo
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "pay")
+    @RequestMapping(value = "/pay")
     @ResponseBody
-    public Map<String, String> pay(BigDecimal fee,String body,String outTradeNo)throws Exception{
-        if(outTradeNo==null ||outTradeNo.length()==0){
-            throw new Exception("fee订单金额不能为空") ;
+    public Map<String, String> pay(BigDecimal fee, String body, String outTradeNo) throws Exception {
+        if (outTradeNo == null || outTradeNo.length() == 0) {
+            throw new Exception("fee订单金额不能为空");
         }
-        if(body==null ||body.length()==0){
-            throw new Exception( "body说明不能为空");
+        if (body == null || body.length() == 0) {
+            throw new Exception("body说明不能为空");
         }
-        if(body==null ||body.length()==0){
-            throw new Exception( "outTradeNo外部订单号不能为空");
+        if (body == null || body.length() == 0) {
+            throw new Exception("outTradeNo外部订单号不能为空");
         }
-        MyConfig config = new MyConfig(appId,mchId,key);
+        MyConfig config = new MyConfig(appId, mchId, key);
         WXPay wxpay = new WXPay(config);
         Map<String, String> data = new LinkedHashMap<String, String>();
         data.put("body", body);
@@ -86,28 +89,28 @@ public class CommonApi {
         data.put("fee_type", "CNY");
         data.put("total_fee", fee.toString()); // 分单位
         data.put("spbill_create_ip", createIp);
-        data.put("notify_url",notifyUrl );
+        data.put("notify_url", notifyUrl);
         data.put("trade_type", "NATIVE");  // "JSAPI"
         data.put("product_id", "1");
         data.put("time_expire", DateUtil.getExpireTime(3));
         try {
-            String name=UUID.randomUUID().toString()+".png";
-            String date =new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String name = UUID.randomUUID().toString() + ".png";
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-            String dir="/py/qr/"+date+"/";
-            File f=new File(dir);
-            if(!f.exists()){
+            String dir = "/py/qr/" + date + "/";
+            File f = new File(dir);
+            if (!f.exists()) {
                 f.mkdirs();
             }
-            String targetPath=dir+name;
-            String logoPath="/py/logo.png";
+            String targetPath = dir + name;
+            String logoPath = "/py/logo.png";
             Map<String, String> resp = wxpay.unifiedOrder(data);
-            if(resp.get("err_code_des")!=null){
+            if (resp.get("err_code_des") != null) {
                 return resp;
             }
-            log.info("下单数据:"+JSON.toJSONString(resp));
-            QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath,targetPath);
-            resp.put("imagePath", "http://re.luzhiai.com:8088/"+date+"/"+name);
+            log.info("下单数据:" + JSON.toJSONString(resp));
+            QRcodeUtil.encode(resp.get("code_url"), 300, 300, logoPath, targetPath);
+            resp.put("imagePath", "http://re.luzhiai.com:8088/" + date + "/" + name);
             return resp;
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,7 +123,7 @@ public class CommonApi {
      *
      * @throws Exception
      */
-    @RequestMapping(value = "payNotify")
+    @RequestMapping(value = "/payNotify")
     @ResponseBody
     public String payNotify(HttpServletRequest request) throws Exception {
         Map<String, String> wxBackData = new HashMap<String, String>();
@@ -128,7 +131,7 @@ public class CommonApi {
         String xml = inputStream2String(is, "UTF-8");
         // 后面把xml转成Map根据数据作逻辑处理
         Map<String, String> map = new HashMap<>();
-        if(null==xml ||xml.length()==0){
+        if (null == xml || xml.length() == 0) {
             return "数据解析错误";
         }
         map = xmlToMap(xml);
@@ -163,21 +166,21 @@ public class CommonApi {
         String tradeType = map.get("trade_type");//交易类型
         String transactionId = map.get("transaction_id");//微信支付订单号
         String returnCode = map.get("return_code");//结果
-        List<OldOrderModel> oldModelList =FileUtil.readFile(oldTableName, OldOrderModel.class);
-        boolean exists=false;//是否已经支付成功,且回调过了
-        for(OldOrderModel om:oldModelList){
-            if(om.getOutTradeNo().equals(outTradeNo)){
-                exists=true ;
+        List<OldOrderModel> oldModelList = FileUtil.readFile(oldTableName, OldOrderModel.class);
+        boolean exists = false;//是否已经支付成功,且回调过了
+        for (OldOrderModel om : oldModelList) {
+            if (om.getOutTradeNo().equals(outTradeNo)) {
+                exists = true;
             }
         }
-        if(exists){
+        if (exists) {
             log.warn("订单重复回调");
             return "";
         }
         //读取文件
-        List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
+        List<OrderModel> modelList = FileUtil.readFile(tableName, OrderModel.class);
         //把回调结果写入文件
-        OrderModel om =new OrderModel();
+        OrderModel om = new OrderModel();
         om.setOpenId(openId);
         om.setOutTradeNo(outTradeNo);
         om.setTotalFee(new BigDecimal(totalFee));
@@ -189,26 +192,26 @@ public class CommonApi {
         om.setTransactionId(transactionId);
         om.setReturnCode(returnCode);
         modelList.add(om);
-        log.info("订单保存成功:"+JSON.toJSONString(om));
-        FileUtil.writeFile(tableName,modelList);
+        log.info("订单保存成功:" + JSON.toJSONString(om));
+        FileUtil.writeFile(tableName, modelList);
         return "";
     }
 
     @ResponseBody
     @GetMapping("get")
-    public OrderModel get(String outTradeNo)throws Exception{
-        OrderModel om=null;
-        if(null==outTradeNo ||"".equals(outTradeNo)){
+    public OrderModel get(String outTradeNo) throws Exception {
+        OrderModel om = null;
+        if (null == outTradeNo || "".equals(outTradeNo)) {
             log.warn("订单号不能为空");
             return new OrderModel();
         }
-        List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
-        if(modelList==null||modelList.size()==0){
-            FileUtil.writeFile(tableName,new ArrayList());
+        List<OrderModel> modelList = FileUtil.readFile(tableName, OrderModel.class);
+        if (modelList == null || modelList.size() == 0) {
+            FileUtil.writeFile(tableName, new ArrayList());
         }
-        for(OrderModel model:modelList){
-            if(model.getOutTradeNo().equals(outTradeNo)){
-               return model;
+        for (OrderModel model : modelList) {
+            if (model.getOutTradeNo().equals(outTradeNo)) {
+                return model;
             }
         }
         return new OrderModel();
@@ -216,32 +219,33 @@ public class CommonApi {
 
     @ResponseBody
     @RequestMapping("del")
-    public String  del(String outTradeNo )throws Exception{
-        if(null==outTradeNo ||"".equals(outTradeNo)){
+    public String del(String outTradeNo) throws Exception {
+        if (null == outTradeNo || "".equals(outTradeNo)) {
             log.warn("订单号不能为空");
             return "订单号不能为空";
         }
-        List<OrderModel> modelList =FileUtil.readFile(tableName, OrderModel.class);
-        Iterator<OrderModel> it =modelList.iterator();
-        boolean rm=false;
-        while (it.hasNext()){
-            OrderModel om=it.next();
-            if(om.getOutTradeNo().equals(outTradeNo)){
+        List<OrderModel> modelList = FileUtil.readFile(tableName, OrderModel.class);
+        Iterator<OrderModel> it = modelList.iterator();
+        boolean rm = false;
+        while (it.hasNext()) {
+            OrderModel om = it.next();
+            if (om.getOutTradeNo().equals(outTradeNo)) {
                 it.remove();
-                rm=true;
-                List<OldOrderModel> oldModelList =FileUtil.readFile(tableName, OldOrderModel.class);
+                rm = true;
+                List<OldOrderModel> oldModelList = FileUtil.readFile(tableName, OldOrderModel.class);
                 oldModelList.add(new OldOrderModel(om.getOutTradeNo()));
-                FileUtil.writeFile(oldTableName,oldModelList);
+                FileUtil.writeFile(oldTableName, oldModelList);
 
             }
         }
-        if(rm){
-            FileUtil.writeFile(tableName,modelList);
-            log.info("del success:"+outTradeNo);
+        if (rm) {
+            FileUtil.writeFile(tableName, modelList);
+            log.info("del success:" + outTradeNo);
             return "SUCCESS";
         }
         return "FAIL";
     }
+
     /**
      *  * InputStream流转换成String字符串
      *  * @param inStream InputStream流

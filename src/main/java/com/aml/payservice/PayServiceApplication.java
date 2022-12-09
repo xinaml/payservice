@@ -7,7 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PayServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PayServiceApplication.class, args);
+        try {
+            SpringApplication.run(PayServiceApplication.class, args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
