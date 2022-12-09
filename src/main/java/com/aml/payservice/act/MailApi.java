@@ -101,13 +101,14 @@ public class MailApi {
     }
 
     private void sendMail(String content) {
+        log.info(content);
         MailAccount account = new MailAccount();
         account.setFrom(mailAccount);
         account.setPass(mailPassword);
         account.setUser(mailAccount);
         List<MailModel> list = JsonFileUtil.readFile(TABLE, MailModel.class);
         for (MailModel bo : list) {
-            MailUtil.send(account, bo.getMail(), "通知", content, false);
+          MailUtil.send(account, bo.getMail(), "通知", content, false);
         }
     }
 }
