@@ -1,18 +1,11 @@
 package com.aml.payservice.act;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.aml.payservice.common.Constant;
 import com.aml.payservice.common.Result;
 import com.aml.payservice.model.ApplyModel;
-import com.aml.payservice.model.MailModel;
-import com.aml.payservice.utils.DateUtil;
 import com.aml.payservice.utils.JsonFileUtil;
 import com.aml.payservice.vo.ApplyModelVO;
-import com.aml.payservice.vo.MailModelVO;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -84,14 +77,14 @@ public class ApplyApi {
         return Result.success(voList);
     }
 
-    @PostMapping("/sync")
+    @PostMapping("/send")
     public Result sync(@RequestBody JSONObject jsonObject) {
-        Map<String,String> resultMap=new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         List<ApplyModel> list = JsonFileUtil.readFile(TABLE, ApplyModel.class);
-        String content=jsonObject.getString("content");
+        String content = jsonObject.getString("content");
         for (ApplyModel mailModel : list) {
-            String result =HttpUtil.post(mailModel.getUrl(),content);
-            resultMap.put(mailModel.getUrl(),result);
+            String result = HttpUtil.post(mailModel.getUrl(), content);
+            resultMap.put(mailModel.getUrl(), result);
         }
         return Result.success(resultMap);
     }
