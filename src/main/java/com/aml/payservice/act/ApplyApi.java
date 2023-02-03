@@ -83,10 +83,10 @@ public class ApplyApi {
         Map<String, String> resultMap = new HashMap<>();
         List<ApplyModel> list = JsonFileUtil.readFile(TABLE, ApplyModel.class);
         String content=JSON.toJSONString(jsonObject);
+        content=content.replaceAll(" ","");
         log.info("接受到转发的参数为:"+ content);
         for (ApplyModel mailModel : list) {
             try {
-
                 String result = HttpUtil.post(mailModel.getUrl(), content);
                 resultMap.put(mailModel.getUrl(), result);
                 log.info("请求结果:"+result);
@@ -101,6 +101,8 @@ public class ApplyApi {
     public static void main(String[] args) {
         String content="{\"posSide\":\"short\",\"instId\":\"RVNUSDT.P-USDT-SWAP\",\"cprice\":0.02944,\"oprice\":0.02944}";
         String result = HttpUtil.post("http://284730cl8.goho.co:34590/api/OKX/TradingViewMsg/Order", content);
+        String result2 = HttpUtil.post("http://119.29.121.235:8008/api/OKX/TradingViewMsg/Order", content);
         System.out.println(result);
+        System.out.println(result2);
     }
 }
