@@ -85,11 +85,22 @@ public class ApplyApi {
         String content=JSON.toJSONString(jsonObject);
         log.info("接受到转发的参数为:"+ content);
         for (ApplyModel mailModel : list) {
-            String result = HttpUtil.post(mailModel.getUrl(), content);
-            log.info("请求结果:"+result);
-            resultMap.put(mailModel.getUrl(), result);
+            try {
+
+                String result = HttpUtil.post(mailModel.getUrl(), content);
+                resultMap.put(mailModel.getUrl(), result);
+                log.info("请求结果:"+result);
+            }catch (Exception e){
+                log.error("请求失败:"+mailModel.getUrl());
+
+            }
         }
         return Result.success(resultMap);
     }
 
+    public static void main(String[] args) {
+        String content="{\"posSide\":\"short\",\"instId\":\"RVNUSDT.P-USDT-SWAP\",\"cprice\":0.02944,\"oprice\":0.02944}";
+        String result = HttpUtil.post("http://284730cl8.goho.co:34590/api/OKX/TradingViewMsg/Order", content);
+        System.out.println(result);
+    }
 }
