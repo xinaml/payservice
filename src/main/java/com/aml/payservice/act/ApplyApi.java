@@ -91,9 +91,4 @@ public class ApplyApi {
         return Result.success(resultMap);
     }
 
-    public static void main(String[] args) {
-        String content="{\"posSide\":\"short\",\"instId\":\"ETH-USDT-SWAP\"}";
-        String result = HttpUtil.post("http://119.29.121.235:80/api/OKX/TradingViewMsg/Order", content);
-        System.out.println(result);
-    }
 }
