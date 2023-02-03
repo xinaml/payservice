@@ -1,6 +1,7 @@
 package com.aml.payservice.act;
 
 import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aml.payservice.common.Result;
 import com.aml.payservice.model.ApplyModel;
@@ -81,8 +82,8 @@ public class ApplyApi {
     public Result sync(@RequestBody JSONObject jsonObject) {
         Map<String, String> resultMap = new HashMap<>();
         List<ApplyModel> list = JsonFileUtil.readFile(TABLE, ApplyModel.class);
-        String content = jsonObject.getString("content");
-        log.info("接受到转发的参数为:"+content);
+        String content=JSON.toJSONString(jsonObject);
+        log.info("接受到转发的参数为:"+ content);
         for (ApplyModel mailModel : list) {
             String result = HttpUtil.post(mailModel.getUrl(), content);
             resultMap.put(mailModel.getUrl(), result);
