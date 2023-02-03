@@ -82,10 +82,17 @@ public class ApplyApi {
         Map<String, String> resultMap = new HashMap<>();
         List<ApplyModel> list = JsonFileUtil.readFile(TABLE, ApplyModel.class);
         String content = jsonObject.getString("content");
+        log.info("接受到转发的参数为:"+content);
         for (ApplyModel mailModel : list) {
             String result = HttpUtil.post(mailModel.getUrl(), content);
             resultMap.put(mailModel.getUrl(), result);
         }
         return Result.success(resultMap);
+    }
+
+    public static void main(String[] args) {
+        String content="{\"posSide\":\"short\",\"instId\":\"ETH-USDT-SWAP\"}";
+        String result = HttpUtil.post("http://119.29.121.235:80/api/OKX/TradingViewMsg/Order", content);
+        System.out.println(result);
     }
 }
