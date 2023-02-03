@@ -13,10 +13,9 @@ import com.aml.payservice.utils.DateUtil;
 import com.aml.payservice.utils.JsonFileUtil;
 import com.aml.payservice.vo.ApplyModelVO;
 import com.aml.payservice.vo.MailModelVO;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -24,6 +23,9 @@ import java.util.*;
  * @author liguiqin
  * @date 2023/2/3
  */
+@RestController
+@RequestMapping("/api")
+@Log4j2
 public class ApplyApi {
     private final String TABLE = "t_apply";
 
