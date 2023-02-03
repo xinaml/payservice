@@ -86,6 +86,7 @@ public class ApplyApi {
         log.info("接受到转发的参数为:"+ content);
         for (ApplyModel mailModel : list) {
             String result = HttpUtil.post(mailModel.getUrl(), content);
+            log.info("请求结果:"+result);
             resultMap.put(mailModel.getUrl(), result);
         }
         return Result.success(resultMap);
